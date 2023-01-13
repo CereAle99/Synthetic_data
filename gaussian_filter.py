@@ -45,7 +45,7 @@ kernel = ndimage.gaussian_filter(np.ones([3,3]), sigma=1)
 
 
 conv_x_train, conv_x_test = x_train, x_test
-n = 20
+n = 1
 
 #appling the gaussian filter to x_train n times
 for i in range(x_train.shape[0]):
