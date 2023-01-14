@@ -38,7 +38,7 @@ plt.show()
 
 #creation of the noisy file, and setting the number of iterations and the diffusion length
 noise_x_train, noise_x_test = x_train, x_test
-n = 500
+n = 1
 beta = 0.01
 
 #appling the gaussian filter to x_train n times
@@ -66,3 +66,14 @@ j = 50
 show_image = noise_x_train[j, :].reshape(28,28)
 plt.imshow(show_image, cmap='gray')
 plt.show()
+
+
+
+#function which get the markov matrix from the gaussian noise matrix
+gaussian_noise = np.random.normal(loc=0.0, scale=1, size=(28,28))
+mean, std = 0, 1
+def get_markov_gauss(matrix):
+    markov_matrix =  (1 / ( std * np.sqrt(2*np.pi))) * np.e ** (-((matrix - mean)**2) / (2*std**2))
+    return markov_matrix
+
+
