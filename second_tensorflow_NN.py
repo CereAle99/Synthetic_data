@@ -1,5 +1,4 @@
-# Importiamo TensorFlow
-import tensorflow as tf
+from tensorflow.keras import layers, models
 
 # Carichiamo il dataset MNIST
 (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
@@ -8,35 +7,24 @@ import tensorflow as tf
 x_train = x_train / 255.0
 x_test = x_test / 255.0
 
-# Creiamo i placeholders per i dati di input e di output
-x = tf.placeholder(tf.float32, [None, 28, 28])
-y = tf.placeholder(tf.int32, [None])
-
-# Creiamo le variabili per i pesi e i bias della rete neurale
-W = tf.Variable(tf.random_normal([784, 10]))
-b = tf.Variable(tf.random_normal([10]))
+# Creiamo il layer di ingresso per i dati di input
+input_layer = layers.Input(shape=(28, 28))
 
 # Creiamo la struttura della rete neurale
-logits = tf.matmul(tf.reshape(x, [-1, 784]), W) + b
-predictions = tf.nn.softmax(logits)
+x = layers.Flatten()(input_layer)
+x = layers.Dense(512, activation='relu')(x)
+x = layers.Dense(256, activation='relu')(x)
+x = layers.Dense(10, activation='softmax')(x)
 
-# Define loss and optimizer
-loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=y))
-optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.5).minimize(loss)
+# Creiamo il modello
+model = models.Model(inputs=input_layer, outputs=x)
 
-# Inizializziamo le variabili
-init = tf.global_variables_initializer()
+# Compiliamo il modello
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
-# Eseguiamo il training della rete neurale
-with tf.Session() as sess:
-    sess.run(init)
-    for step in range(1000):
-        _, l = sess.run([optimizer, loss], feed_dict={x: x_train, y: y_train})
-        if step % 100 == 0:
-            print("Loss: {}".format(l))
+# Eseguiamo il training del modello
+model.fit(x_train, y_train, epochs=5, batch_size=32)
 
-# Valutiamo la rete neurale utilizzando i dati di test
-test_accuracy = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(predictions, 1), y), tf.float32))
-with tf.Session() as sess:
-    sess.run(init)
-    print("Test accuracy: {}".format(sess.run(test_accuracy, feed_dict={x: x_test, y: y_test})))
+# Valutiamo il modello utilizzando i dati di test
+test_loss, test_acc = model.evaluate(x_test, y_test)
+print('Test accuracy:', test_acc)
