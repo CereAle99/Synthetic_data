@@ -1,6 +1,7 @@
 from tensorflow.keras import layers, models
 import tensorflow as tf
 
+
 # Carichiamo il dataset MNIST
 (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
 
@@ -11,10 +12,11 @@ x_test = x_test / 255.0
 # Creiamo il layer di ingresso per i dati di input
 input_layer = layers.Input(shape=(28, 28))
 
-# Creiamo la struttura della rete neurale
+# Creiamo la struttura della rete neurale, sono tre layer nascosti e un 
+# layer di output e il primo argomento sono i dnodi del layer
 x = layers.Flatten()(input_layer)
 x = layers.Dense(512, activation='relu')(x)
-x = layers.Dense(256, activation='relu')(x)
+x = layers.Dense(512, activation='relu')(x)
 x = layers.Dense(10, activation='softmax')(x)
 
 # Creiamo il modello
@@ -23,7 +25,8 @@ model = models.Model(inputs=input_layer, outputs=x)
 # Compiliamo il modello
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
-# Eseguiamo il training del modello
+# Eseguiamo il training del modello, il batch_size è il 
+# numero di esempi che usa ogni volta per aggiornare i pesi
 model.fit(x_train, y_train, epochs=5, batch_size=32)
 
 # Valutiamo il modello utilizzando i dati di test
