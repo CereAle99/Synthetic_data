@@ -1,7 +1,7 @@
 from tensorflow.keras import layers, models
 import tensorflow as tf
 import numpy as np
-
+import matplotlib.pyplot as plt
 
 # Carichiamo il dataset MNIST
 (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
@@ -34,12 +34,14 @@ model.fit(x_train, y_train, epochs=5, batch_size=32)
 test_loss, test_acc = model.evaluate(x_test, y_test)
 print('Test accuracy:', test_acc)
 
-
+#we use the model on a brand new image
 file_path = "/Users/aless/OneDrive/Desktop/immagine.txt"
-
-data = np.genfromtxt(file_path, delimiter=';')
-
-data.reshape(28,28)
-
+data = np.genfromtxt(file_path, delimiter=';') #the file must contain just a row with 784 elements
+data = data.reshape(28,28)
+data = np.nan_to_num(data)
+#show the new image and print the NN's guess and the probability
 plt.imshow(data, cmap='gray')
 plt.show()
+probabilities = model.predict(data[np.newaxis, ...])
+class_idx = np.argmax(probabilities[0])
+print(class_idx, "  p: ", probabilities[0,class_idx])
