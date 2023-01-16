@@ -50,7 +50,7 @@ for i in range(x_train.shape[0]):
     
     noise_x_train[i, :] = single_image.reshape(1,784)
 
-'''
+
 #appling the gaussian noise to x_test n times
 for i in range(x_test.shape[0]):
     single_image = noise_x_test[i, :].reshape(28,28)
@@ -59,7 +59,7 @@ for i in range(x_test.shape[0]):
         single_image += beta * np.random.normal(loc=0.0, scale=1, size=(28,28))
     
     noise_x_test[i, :] = single_image.reshape(1,784) 
-'''
+
 
 #check if the algorithm worked with the j^th image if the sample
 j = 50
