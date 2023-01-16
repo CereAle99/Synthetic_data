@@ -1,10 +1,10 @@
-import tensorflow as tf
 import matplotlib.pyplot as plt
-import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt 
 import scipy.ndimage as ndimage
 import scipy.signal as signal
+from keras import layers, models
+import tensorflow as tf
 
 
 # Caricamento del dataset MNIST
@@ -17,3 +17,53 @@ y_test = y_test.reshape(y_test.shape[0], -1)
 
 # Normalizzazione dei dati
 x_train, x_test = x_train / 255.0, x_test / 255.0
+
+
+#creation of the noisy file, and setting the number of iterations and the diffusion length
+noise_x_train, noise_x_test = x_train, x_test
+n = 1
+beta = 0.01
+
+#appling the gaussian filter to x_train n times
+for i in range(x_train.shape[0]):
+    single_image = noise_x_train[i, :].reshape(28,28)
+
+    for j in range(n):
+        single_image += beta * np.random.normal(loc=0.0, scale=1, size=(28,28))
+    
+    noise_x_train[i, :] = single_image.reshape(1,784)
+    
+#appling the gaussian noise to x_test n times
+for i in range(x_test.shape[0]):
+    single_image = noise_x_test[i, :].reshape(28,28)
+
+    for j in range(n):
+        single_image += beta * np.random.normal(loc=0.0, scale=1, size=(28,28))
+    
+    noise_x_test[i, :] = single_image.reshape(1,784) 
+
+
+
+# Creiamo il layer di ingresso per i dati di input
+input_layer = layers.Input(shape=(28, 28))
+
+# Creiamo la struttura della rete neurale, sono tre layer nascosti e un 
+# layer di output e il primo argomento sono i dnodi del layer
+x = layers.Flatten()(input_layer)
+x = layers.Dense(512, activation='relu')(x)
+x = layers.Dense(256, activation='relu')(x)
+x = layers.Dense(784, activation='softmax')(x)
+
+# Creiamo il modello
+model = models.Model(inputs=input_layer, outputs=x)
+
+# Compiliamo il modello
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+
+# Eseguiamo il training del modello, il batch_size è il 
+# numero di esempi che usa ogni volta per aggiornare i pesi
+model.fit(x_train, y_train, epochs=5, batch_size=32)
+
+# Valutiamo il modello utilizzando i dati di test
+test_loss, test_acc = model.evaluate(x_test, y_test)
+print('Test accuracy:', test_acc)
