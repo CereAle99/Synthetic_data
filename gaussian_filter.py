@@ -23,8 +23,8 @@ x_train, x_test = x_train / 255.0, x_test / 255.0
 
 '''
 #Visualizzare l'immagine numero i del dataframe df
-i, df = 6, y_train
-single_image = df[0, :].reshape(28,28)
+i, df = 6, x_train
+single_image = df[1, :].reshape(28,28)
 plt.imshow(single_image, cmap='gray')
 plt.show()
 

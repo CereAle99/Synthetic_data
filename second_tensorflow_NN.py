@@ -1,5 +1,6 @@
 from tensorflow.keras import layers, models
 import tensorflow as tf
+import numpy as np
 
 
 # Carichiamo il dataset MNIST
@@ -16,7 +17,7 @@ input_layer = layers.Input(shape=(28, 28))
 # layer di output e il primo argomento sono i dnodi del layer
 x = layers.Flatten()(input_layer)
 x = layers.Dense(512, activation='relu')(x)
-x = layers.Dense(512, activation='relu')(x)
+x = layers.Dense(256, activation='relu')(x)
 x = layers.Dense(10, activation='softmax')(x)
 
 # Creiamo il modello
@@ -32,3 +33,13 @@ model.fit(x_train, y_train, epochs=5, batch_size=32)
 # Valutiamo il modello utilizzando i dati di test
 test_loss, test_acc = model.evaluate(x_test, y_test)
 print('Test accuracy:', test_acc)
+
+
+file_path = "/Users/aless/OneDrive/Desktop/immagine.txt"
+
+data = np.genfromtxt(file_path, delimiter=';')
+
+data.reshape(28,28)
+
+plt.imshow(data, cmap='gray')
+plt.show()
