@@ -1,6 +1,4 @@
-import tensorflow as tf
 import matplotlib.pyplot as plt
-import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt 
 import scipy.ndimage as ndimage
@@ -49,7 +47,6 @@ for i in range(x_train.shape[0]):
         single_image += beta * np.random.normal(loc=0.0, scale=1, size=(28,28))
     
     noise_x_train[i, :] = single_image.reshape(1,784)
-
 
 #appling the gaussian noise to x_test n times
 for i in range(x_test.shape[0]):
