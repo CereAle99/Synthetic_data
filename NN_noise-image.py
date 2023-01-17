@@ -20,8 +20,8 @@ x_train, x_test = x_train / 255.0, x_test / 255.0
 
 #creation of the noisy file, and setting the number of iterations and the diffusion length
 noise_x_train, noise_x_test = x_train, x_test
-n = 1
-beta = 0.01
+n = 25
+beta = 0.05
 
 #appling the gaussian filter to x_train n times
 for i in range(x_train.shape[0]):
@@ -57,8 +57,8 @@ input_layer = layers.Input(shape=(784))
 # Creiamo la struttura della rete neurale, sono tre layer nascosti e un 
 # layer di output e il primo argomento sono i dnodi del layer
 x = layers.Flatten()(input_layer)
-x = layers.Dense(512, activation='relu')(x)
 x = layers.Dense(256, activation='relu')(x)
+x = layers.Dense(128, activation='relu')(x)
 x = layers.Dense(784, activation='softmax')(x)
 
 # Creiamo il modello
@@ -77,7 +77,7 @@ print('Test accuracy:', test_acc)
 
 
 #check if the algorithm worked with the j^th image if the sample
-j = 50
+j = 51
 try_image = x_train[j, :] + beta * np.random.normal(loc=0.0, scale=1, size=(784))
 probabilities = model.predict(try_image[np.newaxis, ...])
 probabilities = probabilities.reshape(28,28)
