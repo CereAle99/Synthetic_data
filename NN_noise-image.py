@@ -78,17 +78,12 @@ print('Test accuracy:', test_acc)
 
 #check if the algorithm worked with the j^th image if the sample
 j = 50
-try_image = x_train[j, :].reshape(28,28) + beta * np.random.normal(loc=0.0, scale=1, size=(28,28))
-    
-plt.imshow(show_image, cmap='gray')
+try_image = x_train[j, :] + beta * np.random.normal(loc=0.0, scale=1, size=(784))
+probabilities = model.predict(try_image[np.newaxis, ...])
+probabilities = probabilities.reshape(28,28)
+plt.imshow(try_image.reshape(28,28), cmap='gray')
 plt.show()
 
-
-
-
-
-
-
-
-
+plt.imshow(probabilities, cmap='gray')
+plt.show()
 
