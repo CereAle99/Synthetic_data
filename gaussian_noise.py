@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt 
 import scipy.ndimage as ndimage
 import scipy.signal as signal
+import tensorflow as tf
 
 
 # Caricamento del dataset MNIST
@@ -36,8 +37,8 @@ plt.show()
 
 #creation of the noisy file, and setting the number of iterations and the diffusion length
 noise_x_train, noise_x_test = x_train, x_test
-n = 1
-beta = 0.01
+n = 25
+beta = 0.05
 
 #appling the gaussian filter to x_train n times
 for i in range(x_train.shape[0]):
