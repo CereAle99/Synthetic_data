@@ -38,7 +38,7 @@ print('Test accuracy:', test_acc)
 file_path = "/Users/aless/OneDrive/Desktop/immagine.txt"
 data = np.genfromtxt(file_path, delimiter=';') #the file must contain just a row with 784 elements
 data = data.reshape(28,28)
-data = np.nan_to_num(data)
+data = np.nan_to_num(data)#the file had a nan
 #show the new image and print the NN's guess and the probability
 plt.imshow(data, cmap='gray')
 plt.show()
