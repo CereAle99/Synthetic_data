@@ -41,15 +41,15 @@ plt.show()
 '''
 
 #creating a gaussian filter 
-size = 9
+size = 5
 sigma = 0.5
 kernel = signal.gaussian(size, sigma) #1D
 kernel = np.outer(kernel, kernel) #2D
 
 conv_x_train, conv_x_test = x_train, x_test
-n = 10
+n = 20
 
-#appling the gaussian filter to x_train n times
+#appling the gaussian filter to x_train n times    
 for i in range(x_train.shape[0]):
     single_image = conv_x_train[i, :].reshape(28,28)
 
@@ -66,8 +66,8 @@ for i in range(x_test.shape[0]):
     for j in range(n):
         single_image = signal.convolve2d(single_image, kernel, mode='same')
     
-    conv_x_test[i, :]= single_image.reshape(1,784) 
+    conv_x_test[i, :]= single_image.reshape(1,784)
 
-single_image = conv_x_test[507, :].reshape(28,28)
+single_image = conv_x_train[1, :].reshape(28,28)
 plt.imshow(single_image, cmap='gray')
 plt.show()
