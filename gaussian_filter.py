@@ -41,11 +41,13 @@ plt.show()
 '''
 
 #creating a gaussian filter 
-kernel = ndimage.gaussian_filter(np.ones([3,3]), sigma=1)
-
+size = 9
+sigma = 0.5
+kernel = signal.gaussian(size, sigma) #1D
+kernel = np.outer(kernel, kernel) #2D
 
 conv_x_train, conv_x_test = x_train, x_test
-n = 1
+n = 10
 
 #appling the gaussian filter to x_train n times
 for i in range(x_train.shape[0]):
