@@ -29,7 +29,7 @@ plt.imshow(single_image, cmap='gray')
 plt.show()
 
 
-#apply gaussian filter n times and show it at the end
+#apply gaussian filter n times and show it at the end, for that single image
 n = 20
 convolved_image = single_image
 kernel = ndimage.gaussian_filter(np.ones([3,3]), sigma=1)
