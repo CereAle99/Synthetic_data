@@ -46,12 +46,12 @@ sigma = 0.5
 kernel = signal.gaussian(size, sigma) #1D
 kernel = np.outer(kernel, kernel) #2D
 
-conv_x_train, conv_x_test = x_train, x_test
-n = 20
+conv_x_train, conv_x_test = np.empty_like(x_train), np.empty_like(x_test)
+n = 25
 
 #appling the gaussian filter to x_train n times    
 for i in range(x_train.shape[0]):
-    single_image = conv_x_train[i, :].reshape(28,28)
+    single_image = x_train[i, :].reshape(28,28)
 
     for j in range(n):
         single_image = signal.convolve2d(single_image, kernel, mode='same')
@@ -61,13 +61,32 @@ for i in range(x_train.shape[0]):
 
 #appling the gaussian filter to x_test n times
 for i in range(x_test.shape[0]):
-    single_image = conv_x_test[i, :].reshape(28,28)
+    single_image = x_test[i, :].reshape(28,28)
 
     for j in range(n):
         single_image = signal.convolve2d(single_image, kernel, mode='same')
     
     conv_x_test[i, :]= single_image.reshape(1,784)
 
+
+single_image = x_train[1, :].reshape(28,28)
+plt.imshow(single_image, cmap='gray')
+plt.show()
+
+
 single_image = conv_x_train[1, :].reshape(28,28)
 plt.imshow(single_image, cmap='gray')
 plt.show()
+
+
+#building the relative transition matrix 
+dim = x_train.shape[1]
+transition_matrix = np.empty((dim,dim))
+
+for j in range(dim):
+    
+    for i in range(dim):
+        row = i % 28 + (size//2)
+        column = i // 28 + (size//2)
+        transition_matrix[i,j] = kernel[row,column]
+
