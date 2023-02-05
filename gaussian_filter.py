@@ -79,14 +79,36 @@ plt.imshow(single_image, cmap='gray')
 plt.show()
 
 
-#building the relative transition matrix 
+#BUILDING THE RELATIVE TRANSITION MATRIX
+
+#creating an outer frame of zeros
+#funcion that makes the frame of zeros n times
+#def add_frame(matrix):
+#    n = len(matrix)
+#    new_matrix = [[0] * (n + 2) for i in range(n + 2)]
+#    for i in range(n):
+#        for j in range(n):
+#            new_matrix[i + 1][j + 1] = matrix[i][j]
+#    return new_matrix
+#
+#for i in range(size//2):
+#    kernel = add_frame(kernel)
+
+
+#creating the transition matrix 
 dim = x_train.shape[1]
 transition_matrix = np.empty((dim,dim))
 
 for j in range(dim):
     
     for i in range(dim):
-        row = i % 28 + (size//2)
-        column = i // 28 + (size//2)
+        if(j % 28 <= 1):
+            shiftx = 2 - (j % 28)
+        elif(j % 28 >=26):
+            shiftx = 
+
+        row = i % 28 + shiftx
+        column = i // 28 + shifty
+
         transition_matrix[i,j] = kernel[row,column]
 
