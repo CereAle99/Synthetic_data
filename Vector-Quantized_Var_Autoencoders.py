@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from tensorflow import keras
-from tensorflow.keras import layers
+from keras import layers # keras for tensorflow.keras   
 import tensorflow_probability as tfp
 import tensorflow as tf
 
@@ -286,3 +286,8 @@ for i in range(len(test_images)):
     plt.title("Code")
     plt.axis("off")
     plt.show()
+
+
+
+# Save the weights
+vqvae_trainer.save_weights('./checkpoints/my_checkpoint')
