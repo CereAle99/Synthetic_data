@@ -221,6 +221,7 @@ vqvae_trainer = VQVAETrainer(data_variance, latent_dim=16, num_embeddings=128)
 vqvae_trainer.compile(optimizer=keras.optimizers.Adam())
 vqvae_trainer.fit(x_train_scaled, epochs=30, batch_size=128)
 
+#vqvae_trainer.load_weights('./checkpoints/my_checkpoint')
 
 
 
