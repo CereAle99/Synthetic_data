@@ -220,14 +220,15 @@ data_variance = np.var(x_train / 255.0)
 vqvae_trainer = VQVAETrainer(data_variance, latent_dim=16, num_embeddings=128)
 vqvae_trainer.compile(optimizer=keras.optimizers.Adam())
 
+#training of the neural network
 #vqvae_trainer.fit(x_train_scaled, epochs=30, batch_size=128)
 
 # load the weights
-vqvae_trainer.load_weights('./checkpoints/my_checkpoint')
+vqvae_trainer.load_weights('./checkpoints/vqvae_mnist')
 
 
 # Save the weights
-vqvae_trainer.save_weights('./checkpoints/my_checkpoint')
+vqvae_trainer.save_weights('./checkpoints/vqvae_mnist')
 
 
 
