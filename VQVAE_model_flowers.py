@@ -270,14 +270,18 @@ vqvae_trainer = VQVAETrainer(data_variance, latent_dim=16, num_embeddings=128)
 vqvae_trainer.compile(optimizer=keras.optimizers.Adam())
 
 # training of the neural network
-vqvae_trainer.fit(x_train_scaled, epochs=30, batch_size=32)
+#vqvae_trainer.fit(x_train_scaled, epochs=30, batch_size=32)
+#
+# Save the weights
+#vqvae_trainer.save_weights('./checkpoints/vqvae_flowers')
+
+
 
 # load the weights
-# vqvae_trainer.load_weights('./checkpoints/vqvae_flowers')
+vqvae_trainer.load_weights('./checkpoints/vqvae_flowers')
 
 
-# Save the weights
-vqvae_trainer.save_weights('./checkpoints/vqvae_flowers')
+
 
 
 
@@ -341,8 +345,3 @@ for i in range(len(test_images)):
     plt.title("Code")
     plt.axis("off")
     plt.show()
-
-
-
-# Save the weights
-vqvae_trainer.save_weights('./checkpoints/my_checkpoint')
