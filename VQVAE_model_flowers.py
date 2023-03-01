@@ -5,6 +5,9 @@ from tensorflow import keras
 from keras import layers # keras for tensorflow.keras   
 import tensorflow_probability as tfp
 import tensorflow as tf
+import pathlib
+
+
 
 
 
@@ -79,7 +82,7 @@ class VectorQuantizer(layers.Layer):
 
 
 def get_encoder(latent_dim=16):
-    encoder_inputs = keras.Input(shape=(28, 28, 1))
+    encoder_inputs = keras.Input(shape=(180, 180, 3))
     x = layers.Conv2D(32, 3, activation="relu", strides=2, padding="same")(
         encoder_inputs
     )
@@ -109,11 +112,12 @@ def get_decoder(latent_dim=16):
 
 
 
+
 def get_vqvae(latent_dim=16, num_embeddings=64):
     vq_layer = VectorQuantizer(num_embeddings, latent_dim, name="vector_quantizer")
     encoder = get_encoder(latent_dim)
     decoder = get_decoder(latent_dim)
-    inputs = keras.Input(shape=(28, 28, 1))
+    inputs = keras.Input(shape=(180, 180, 3))
     encoder_outputs = encoder(inputs)
     quantized_latents = vq_layer(encoder_outputs)
     reconstructions = decoder(quantized_latents)
@@ -194,8 +198,52 @@ class VQVAETrainer(keras.models.Model):
 
 
 
+dataset_url = "https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz"
+data_dir = tf.keras.utils.get_file(origin=dataset_url,
+                                   fname='flower_photos',
+                                   untar=True)
+data_dir = pathlib.Path(data_dir)
 
 
+batch_size = 32
+img_height = 180
+img_width = 180
+
+
+# training set
+x_train = tf.keras.utils.image_dataset_from_directory(
+  data_dir,
+  validation_split=0.2,
+  subset="training",
+  seed=123,
+  image_size=(img_height, img_width),
+  batch_size=batch_size)
+# trasformare il dataset in un array di numpy
+x_train = np.concatenate([batch for batch,_ in x_train])
+
+
+# testing set
+x_test = tf.keras.utils.image_dataset_from_directory(
+  data_dir,
+  validation_split=0.2,
+  subset="validation",
+  seed=123,
+  image_size=(img_height, img_width),
+  batch_size=batch_size)
+
+# trasformare il dataset in un array di numpy
+x_test = np.concatenate([batch for batch,_ in x_test])
+
+
+x_train_scaled = (x_train / 255.0) - 0.5
+x_test_scaled = (x_test / 255.0) - 0.5
+
+data_variance = np.var(x_train / 255.0)
+
+
+'''
+
+# mnist dataset
 (x_train, _), (x_test, _) = keras.datasets.mnist.load_data()
 
 x_train = np.expand_dims(x_train, -1)
@@ -205,6 +253,7 @@ x_test_scaled = (x_test / 255.0) - 0.5
 
 data_variance = np.var(x_train / 255.0)
 
+'''
 
 
 
@@ -220,15 +269,15 @@ data_variance = np.var(x_train / 255.0)
 vqvae_trainer = VQVAETrainer(data_variance, latent_dim=16, num_embeddings=128)
 vqvae_trainer.compile(optimizer=keras.optimizers.Adam())
 
-#training of the neural network
-#vqvae_trainer.fit(x_train_scaled, epochs=30, batch_size=128)
+# training of the neural network
+vqvae_trainer.fit(x_train_scaled, epochs=30, batch_size=32)
 
 # load the weights
-vqvae_trainer.load_weights('./checkpoints/vqvae_mnist')
+# vqvae_trainer.load_weights('./checkpoints/vqvae_flowers')
 
 
 # Save the weights
-vqvae_trainer.save_weights('./checkpoints/vqvae_mnist')
+vqvae_trainer.save_weights('./checkpoints/vqvae_flowers')
 
 
 
