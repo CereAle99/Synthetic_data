@@ -270,18 +270,15 @@ vqvae_trainer = VQVAETrainer(data_variance, latent_dim=16, num_embeddings=128)
 vqvae_trainer.compile(optimizer=keras.optimizers.Adam())
 
 # training of the neural network
-#vqvae_trainer.fit(x_train_scaled, epochs=30, batch_size=32)
-#
-# Save the weights
-#vqvae_trainer.save_weights('./checkpoints/vqvae_flowers')
+vqvae_trainer.fit(x_train_scaled, epochs=30, batch_size=32)
+
+# Save the weights in HDFS format
+vqvae_trainer.save_weights('./checkpoints/vqvae_flowers.h5')
 
 
 
-# load the weights
-vqvae_trainer.load_weights('./checkpoints/vqvae_flowers')
-
-
-
+# load the weights in HDFS format
+#vqvae_trainer.load_weights('./checkpoints/vqvae_flowers.h5')
 
 
 
