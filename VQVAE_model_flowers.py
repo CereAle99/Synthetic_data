@@ -6,7 +6,8 @@ from keras import layers # keras for tensorflow.keras
 import tensorflow_probability as tfp
 import tensorflow as tf
 import pathlib
-
+import pandas as pd
+import os
 
 
 
@@ -86,7 +87,8 @@ def get_encoder(latent_dim=16):
     x = layers.Conv2D(32, 3, activation="relu", strides=2, padding="same")(
         encoder_inputs
     )
-    x = layers.Conv2D(64, 3, activation="relu", strides=2, padding="same")(x)
+    x = layers.Conv2D(64, 3, activation="relu", strides=2, padding="same")(x)#eventualmente aggiungere un residual block
+    #x = layers.Conv2D(64, 3, activation="relu", strides=2, padding="same")(x)
     encoder_outputs = layers.Conv2D(latent_dim, 1, padding="same")(x)
     return keras.Model(encoder_inputs, encoder_outputs, name="encoder")
 
@@ -97,6 +99,7 @@ def get_decoder(latent_dim=16):
         latent_inputs
     )
     x = layers.Conv2DTranspose(32, 3, activation="relu", strides=2, padding="same")(x)
+    #x = layers.Conv2DTranspose(32, 4, activation="relu", strides=2, padding="same")(x)
     decoder_outputs = layers.Conv2DTranspose(3, 3, padding="same")(x)
     return keras.Model(latent_inputs, decoder_outputs, name="decoder")
 
@@ -161,7 +164,7 @@ class VQVAETrainer(keras.models.Model):
             self.vq_loss_tracker,
         ]
 
-    def train_step(self, x):
+    def train_step(self, x):#provare a fare un fit con un fit normale
         with tf.GradientTape() as tape:
             # Outputs from the VQ-VAE.
             reconstructions = self.vqvae(x)
@@ -269,16 +272,27 @@ data_variance = np.var(x_train / 255.0)
 vqvae_trainer = VQVAETrainer(data_variance, latent_dim=16, num_embeddings=128)
 vqvae_trainer.compile(optimizer=keras.optimizers.Adam())
 
-# training of the neural network
-vqvae_trainer.fit(x_train_scaled, epochs=30, batch_size=32)
+# training of the neural network and then Save the weights in HDFS format
+params = vqvae_trainer.fit(x_train_scaled, epochs=30, batch_size=32)
+#vqvae_trainer.save_weights('./checkpoints/vqvae_flowers')
 
-# Save the weights in HDFS format
-vqvae_trainer.save_weights('./checkpoints/vqvae_flowers.h5')
+#salva come dizionario il fit e poi dataframe pandas per avere una cronologia dei parametri del modello
+model_params = pd.DataFrame(params)
+filename = './checkpoints/model0.csv'
+i = 0
+while os.path.isfile(filename):
+    filename = f'./checkpoints/model{i}.csv'
+    i += 1
+
+model_params.to_csv(filename, index=False)
 
 
 
-# load the weights in HDFS format
-#vqvae_trainer.load_weights('./checkpoints/vqvae_flowers.h5')
+
+
+
+# load the weights in checkpoint format
+#vqvae_trainer.load_weights('./checkpoints/vqvae_flowers')
 
 
 
