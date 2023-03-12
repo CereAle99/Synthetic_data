@@ -1,2 +1,2 @@
-model_checkpoint_path: "vqvae_flowers"
-all_model_checkpoint_paths: "vqvae_flowers"
+model_checkpoint_path: "model_flowers1"
+all_model_checkpoint_paths: "model_flowers1"
