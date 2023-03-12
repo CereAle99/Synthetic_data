@@ -277,7 +277,7 @@ params = vqvae_trainer.fit(x_train_scaled, epochs=30, batch_size=32)
 #vqvae_trainer.save_weights('./checkpoints/vqvae_flowers')
 
 #salva come dizionario il fit e poi dataframe pandas per avere una cronologia dei parametri del modello
-model_params = pd.DataFrame(params)
+model_params = pd.DataFrame(params.history)
 filename = './checkpoints/model0.csv'
 i = 0
 while os.path.isfile(filename):
