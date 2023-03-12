@@ -210,8 +210,8 @@ data_dir = pathlib.Path(data_dir)
 
 
 batch_size = 32
-img_height = 180
-img_width = 180
+img_height = 160
+img_width = 160
 
 
 # training set
@@ -273,30 +273,30 @@ data_variance = np.var(x_train / 255.0)
 vqvae_trainer = VQVAETrainer(data_variance, latent_dim=16, num_embeddings=128)
 vqvae_trainer.compile(optimizer=keras.optimizers.Adam())
 
-# training of the neural network and then Save the weights in HDFS format
-params = vqvae_trainer.fit(x_train_scaled, epochs=30, batch_size=32)
-#vqvae_trainer.save_weights('./checkpoints/vqvae_flowers')
 
-#salva come dizionario il fit e poi dataframe pandas per avere una cronologia dei parametri del modello
-model_params = pd.DataFrame(params.history)
+# creating the saves destinations for model and weights
 filename = './checkpoints/model0.csv'
-i = 0
+checkpoint_file = './checkpoints/model_flowers'
+load_checkpoint = f'./checkpoints/model_flowers'
+i = 1
 while os.path.isfile(filename):
     filename = f'./checkpoints/model{i}.csv'
+    load_checkpoint = f'./checkpoints/model_flowers{i-1}'
+    checkpoint_file = f'./checkpoints/model_flowers{i}'
     i += 1
 
+# training of the neural network and then saves as a .csv file the model parameters hystory
+params = vqvae_trainer.fit(x_train_scaled, epochs=30, batch_size=32)
+model_params = pd.DataFrame(params.history)
 model_params.to_csv(filename, index=False)
 
 
-
-
-
-
 # load the weights in checkpoint format
-#vqvae_trainer.load_weights('./checkpoints/vqvae_flowers')
+#vqvae_trainer.load_weights(load_checkpoint)
 
 
-
+# saves the weights of the training
+vqvae_trainer.save_weights(checkpoint_file)
 
 
 
