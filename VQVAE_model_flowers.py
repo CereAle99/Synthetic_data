@@ -116,6 +116,7 @@ def get_decoder(latent_dim=16):
 
 
 
+
 def get_vqvae(latent_dim=16, num_embeddings=64):
     vq_layer = VectorQuantizer(num_embeddings, latent_dim, name="vector_quantizer")
     encoder = get_encoder(latent_dim)
