@@ -89,16 +89,18 @@ def get_encoder(latent_dim=16):
     )
     x = layers.Conv2D(64, 3, activation="relu", strides=2, padding="same")(x)#eventualmente aggiungere un residual block
     x = layers.Conv2D(128, 3, activation="relu", strides=2, padding="same")(x)
+    x = layers.Conv2D(256, 3, activation="relu", strides=2, padding="same")(x)
     encoder_outputs = layers.Conv2D(latent_dim, 1, padding="same")(x)
     return keras.Model(encoder_inputs, encoder_outputs, name="encoder")
 
 
 def get_decoder(latent_dim=16):
     latent_inputs = keras.Input(shape=get_encoder(latent_dim).output.shape[1:])
-    x = layers.Conv2DTranspose(128, 4, activation="relu", strides=2, padding="same")(
+    x = layers.Conv2DTranspose(256, 4, activation="relu", strides=2, padding="same")(
         latent_inputs
     ) #dimesion of the filter 4x4 because in the decoding you jump a row each two and with 3x3 you evaluate only the zeros around your central pixel
-    x = layers.Conv2DTranspose(64, 4, activation="relu", strides=2, padding="same")(x) #dimesion of the filter
+    x = layers.Conv2DTranspose(128, 4, activation="relu", strides=2, padding="same")(x) #dimesion of the filter
+    x = layers.Conv2DTranspose(64, 4, activation="relu", strides=2, padding="same")(x)
     x = layers.Conv2DTranspose(32, 4, activation="relu", strides=2, padding="same")(x)
     decoder_outputs = layers.Conv2DTranspose(3, 3, padding="same")(x)
     return keras.Model(latent_inputs, decoder_outputs, name="decoder")
@@ -288,7 +290,7 @@ while os.path.isfile(filename):
 # training of the neural network and then saves as a .csv file the model parameters hystory
 params = vqvae_trainer.fit(x_train_scaled, epochs=30, batch_size=32)
 model_params = pd.DataFrame(params.history)
-model_params.to_csv(filename, index=False)
+model_params.to_csv(filename, index=False)# il file è pieno solo delle funzioni di loss ma non dei parametri del modella...???
 
 
 # load the weights in checkpoint format
