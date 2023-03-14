@@ -12,9 +12,6 @@ import os
 
 
 
-
-
-
 class VectorQuantizer(layers.Layer):
     def __init__(self, num_embeddings, embedding_dim, beta=0.25, **kwargs):
         super().__init__(**kwargs)
@@ -79,9 +76,6 @@ class VectorQuantizer(layers.Layer):
 
 
 
-
-
-
 def get_encoder(latent_dim=16):
     encoder_inputs = keras.Input(shape=(160, 160, 3))
     x = layers.Conv2D(32, 3, activation="relu", strides=2, padding="same")(
@@ -96,22 +90,14 @@ def get_encoder(latent_dim=16):
 
 def get_decoder(latent_dim=16):
     latent_inputs = keras.Input(shape=get_encoder(latent_dim).output.shape[1:])
-    x = layers.Conv2DTranspose(256, 4, activation="relu", strides=2, padding="same")(
+    x = layers.Conv2DTranspose(256, 3, activation="relu", strides=2, padding="same")(
         latent_inputs
     ) #dimesion of the filter 4x4 because in the decoding you jump a row each two and with 3x3 you evaluate only the zeros around your central pixel
-    x = layers.Conv2DTranspose(128, 4, activation="relu", strides=2, padding="same")(x) #dimesion of the filter
-    x = layers.Conv2DTranspose(64, 4, activation="relu", strides=2, padding="same")(x)
-    x = layers.Conv2DTranspose(32, 4, activation="relu", strides=2, padding="same")(x)
+    x = layers.Conv2DTranspose(128, 3, activation="relu", strides=2, padding="same")(x) #dimesion of the filter
+    x = layers.Conv2DTranspose(64, 3, activation="relu", strides=2, padding="same")(x)
+    x = layers.Conv2DTranspose(32, 3, activation="relu", strides=2, padding="same")(x)
     decoder_outputs = layers.Conv2DTranspose(3, 3, padding="same")(x)
     return keras.Model(latent_inputs, decoder_outputs, name="decoder")
-
-
-
-
-
-
-
-
 
 
 
@@ -131,13 +117,6 @@ def get_vqvae(latent_dim=16, num_embeddings=64):
 
 
 get_vqvae().summary()
-
-
-
-
-
-
-
 
 
 
@@ -197,13 +176,7 @@ class VQVAETrainer(keras.models.Model):
 
 
 
-
-
-
-
-
-
-
+# Training Dataset
 dataset_url = "https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz"
 data_dir = tf.keras.utils.get_file(origin=dataset_url,
                                    fname='flower_photos',
@@ -247,36 +220,14 @@ x_test_scaled = (x_test / 255.0) - 0.5
 data_variance = np.var(x_train / 255.0)
 
 
-'''
-
-# mnist dataset
-(x_train, _), (x_test, _) = keras.datasets.mnist.load_data()
-
-x_train = np.expand_dims(x_train, -1)
-x_test = np.expand_dims(x_test, -1)
-x_train_scaled = (x_train / 255.0) - 0.5
-x_test_scaled = (x_test / 255.0) - 0.5
-
-data_variance = np.var(x_train / 255.0)
-
-'''
 
 
-
-
-
-
-
-
-
-
-
-
+# Creates and compiles of the model
 vqvae_trainer = VQVAETrainer(data_variance, latent_dim=16, num_embeddings=128)
 vqvae_trainer.compile(optimizer=keras.optimizers.Adam())
 
 
-# creating the saves destinations for model and weights
+# creates the saves destinations for model and weights
 filename = './checkpoints/model0.csv'
 checkpoint_file = './checkpoints/model_flowers'
 load_checkpoint = f'./checkpoints/model_flowers'
@@ -304,9 +255,6 @@ vqvae_trainer.save_weights(checkpoint_file)
 
 
 
-
-
-
 def show_subplot(original, reconstructed):
     plt.subplot(1, 2, 1)
     plt.imshow(original.squeeze() + 0.5)
@@ -322,20 +270,12 @@ def show_subplot(original, reconstructed):
 
 
 trained_vqvae_model = vqvae_trainer.vqvae
-idx = np.random.choice(len(x_test_scaled), 10)
+idx = np.random.choice(len(x_test_scaled), 4)
 test_images = x_test_scaled[idx]
 reconstructions_test = trained_vqvae_model.predict(test_images)
 
 for test_image, reconstructed_image in zip(test_images, reconstructions_test):
     show_subplot(test_image, reconstructed_image)
-
-
-
-
-
-
-
-
 
 
 
