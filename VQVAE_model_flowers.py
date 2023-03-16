@@ -82,20 +82,16 @@ def get_encoder(latent_dim=16):
         encoder_inputs
     )
     x = layers.Conv2D(64, 3, activation="relu", strides=2, padding="same")(x)#eventualmente aggiungere un residual block
-    x = layers.Conv2D(128, 3, activation="relu", strides=2, padding="same")(x)
-    x = layers.Conv2D(256, 3, activation="relu", strides=2, padding="same")(x)
     encoder_outputs = layers.Conv2D(latent_dim, 1, padding="same")(x)
     return keras.Model(encoder_inputs, encoder_outputs, name="encoder")
 
 
 def get_decoder(latent_dim=16):
     latent_inputs = keras.Input(shape=get_encoder(latent_dim).output.shape[1:])
-    x = layers.Conv2DTranspose(256, 3, activation="relu", strides=2, padding="same")(
+    x = layers.Conv2DTranspose(64, 4, activation="relu", strides=2, padding="same")(
         latent_inputs
     ) #dimesion of the filter 4x4 because in the decoding you jump a row each two and with 3x3 you evaluate only the zeros around your central pixel
-    x = layers.Conv2DTranspose(128, 3, activation="relu", strides=2, padding="same")(x) #dimesion of the filter
-    x = layers.Conv2DTranspose(64, 3, activation="relu", strides=2, padding="same")(x)
-    x = layers.Conv2DTranspose(32, 3, activation="relu", strides=2, padding="same")(x)
+    x = layers.Conv2DTranspose(32, 4, activation="relu", strides=2, padding="same")(x) #dimesion of the filter
     decoder_outputs = layers.Conv2DTranspose(3, 3, padding="same")(x)
     return keras.Model(latent_inputs, decoder_outputs, name="decoder")
 
@@ -228,28 +224,28 @@ vqvae_trainer.compile(optimizer=keras.optimizers.Adam())
 
 
 # creates the saves destinations for model and weights
-filename = './checkpoints/model0.csv'
-checkpoint_file = './checkpoints/model_flowers'
-load_checkpoint = f'./checkpoints/model_flowers'
+filename = './synthetic_data/checkpoints/model0.csv'
+checkpoint_file = './synthetic_data/checkpoints/model_flowers'
+load_checkpoint = './synthetic_data/checkpoints/model_flowers'
 i = 1
 while os.path.isfile(filename):
-    filename = f'./checkpoints/model{i}.csv'
-    load_checkpoint = f'./checkpoints/model_flowers{i-1}'
-    checkpoint_file = f'./checkpoints/model_flowers{i}'
+    filename = f'./synthetic_data/checkpoints/model{i}.csv'
+    load_checkpoint = f'./synthetic_data/checkpoints/model_flowers{i-1}'
+    checkpoint_file = f'./synthetic_data/checkpoints/model_flowers{i}'
     i += 1
 
 # training of the neural network and then saves as a .csv file the model parameters hystory
-params = vqvae_trainer.fit(x_train_scaled, epochs=30, batch_size=32)
-model_params = pd.DataFrame(params.history)
-model_params.to_csv(filename, index=False)# il file è pieno solo delle funzioni di loss ma non dei parametri del modella...???
+#params = vqvae_trainer.fit(x_train_scaled, epochs=30, batch_size=32)
+#model_params = pd.DataFrame(params.history)
+#model_params.to_csv(filename, index=False)# il file è pieno solo delle funzioni di loss ma non dei parametri del modella...???
 
 
 # load the weights in checkpoint format
-#vqvae_trainer.load_weights(load_checkpoint)
+vqvae_trainer.load_weights(load_checkpoint)
 
 
 # saves the weights of the training
-vqvae_trainer.save_weights(checkpoint_file)
+#vqvae_trainer.save_weights(checkpoint_file)
 
 
 
