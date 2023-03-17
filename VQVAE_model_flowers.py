@@ -222,7 +222,6 @@ x_train_scaled = (x_train / 255.0) - 0.5
 x_test_scaled = (x_test / 255.0) - 0.5
 
 data_variance = np.var(x_train / 255.0)
-
 '''
 
 
@@ -268,8 +267,8 @@ def prepare_dataset(split):
 # load dataset
 x_train = prepare_dataset("train[:80%]+validation[:80%]+test[:80%]")
 x_test = prepare_dataset("train[80%:]+validation[80%:]+test[80%:]")
-data_variance = np.var(x_train / 255.0)
-
+#data_variance = np.var(x_train / 255.0) 
+data_variance = 0.01 #random variance change it ???
 
 
 # Creates and compiles of the model
