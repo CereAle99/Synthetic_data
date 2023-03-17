@@ -74,14 +74,22 @@ class VectorQuantizer(layers.Layer):
 
 
 
+def resblock(x, kernelsize, filters):
+    fx = layers.Conv2D(filters, kernelsize, activation='relu', padding='same')(x)
+    fx = layers.BatchNormalization()(fx)
+    fx = layers.Conv2D(filters, kernelsize, padding='same')(fx)
+    out = layers.Add()([x,fx])
+    out = layers.ReLU()(out)
+    out = layers.BatchNormalization()(out)
+    return out
 
 
 def get_encoder(latent_dim=16):
     encoder_inputs = keras.Input(shape=(160, 160, 3))
-    x = layers.Conv2D(32, 3, activation="relu", strides=2, padding="same")(
-        encoder_inputs
-    )
-    x = layers.Conv2D(64, 3, activation="relu", strides=2, padding="same")(x)#eventualmente aggiungere un residual block
+    x = layers.Conv2D(32, 3, activation="relu", strides=2, padding="same")(encoder_inputs)
+    x = resblock(x, 3, 32)
+    x = layers.Conv2D(64, 3, activation="relu", strides=2, padding="same")(x)
+    x = resblock(x, 3, 64)
     x = layers.Conv2D(128, 3, activation="relu", strides=2, padding="same")(x)
     encoder_outputs = layers.Conv2D(latent_dim, 1, padding="same")(x)
     return keras.Model(encoder_inputs, encoder_outputs, name="encoder")
@@ -89,14 +97,11 @@ def get_encoder(latent_dim=16):
 
 def get_decoder(latent_dim=16):
     latent_inputs = keras.Input(shape=get_encoder(latent_dim).output.shape[1:])
-    x = layers.Conv2DTranspose(128, 4, activation="relu", strides=2, padding="same")(
-        latent_inputs
-    ) #dimesion of the filter 4x4 because in the decoding you jump a row each two and with 3x3 you evaluate only the zeros around your central pixel
+    x = layers.Conv2DTranspose(128, 4, activation="relu", strides=2, padding="same")(latent_inputs) #dimesion of the filter 4x4 because in the decoding you jump a row each two and with 3x3 you evaluate only the zeros around your central pixel
     x = layers.Conv2DTranspose(64, 4, activation="relu", strides=2, padding="same")(x) #dimesion of the filter
     x = layers.Conv2DTranspose(32, 4, activation="relu", strides=2, padding="same")(x)
     decoder_outputs = layers.Conv2DTranspose(3, 3, padding="same")(x)
     return keras.Model(latent_inputs, decoder_outputs, name="decoder")
-
 
 
 
@@ -243,7 +248,7 @@ while os.path.isfile(filename):
 
 
 # load the weights in checkpoint format
-vqvae_trainer.load_weights(load_checkpoint)
+#vqvae_trainer.load_weights(load_checkpoint)
 
 
 # saves the weights of the training
