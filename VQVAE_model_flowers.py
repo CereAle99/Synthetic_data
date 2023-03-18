@@ -227,9 +227,9 @@ data_variance = np.var(x_train / 255.0)
 
 # data
 dataset_name = "oxford_flowers102"
-dataset_repetitions = 5
+dataset_repetitions = 1
 image_size = 160
-batch_size = 64
+batch_size = 32
 
 def preprocess_image(data):
     # center crop image
@@ -265,8 +265,8 @@ def prepare_dataset(split):
 
 
 # load dataset
-x_train = prepare_dataset("train[:80%]+validation[:80%]+test[:80%]")
-x_test = prepare_dataset("train[80%:]+validation[80%:]+test[80%:]")
+x_train_scaled = prepare_dataset("train[:80%]+validation[:80%]+test[:80%]")
+x_test_scaled = prepare_dataset("train[80%:]+validation[80%:]+test[80%:]")
 #data_variance = np.var(x_train / 255.0) 
 data_variance = 0.01 #random variance change it ???
 
@@ -288,9 +288,9 @@ while os.path.isfile(filename):
     i += 1
 
 # training of the neural network and then saves as a .csv file the model parameters hystory
-#params = vqvae_trainer.fit(x_train_scaled, epochs=30, batch_size=32)
-#model_params = pd.DataFrame(params.history)
-#model_params.to_csv(filename, index=False)# il file è pieno solo delle funzioni di loss ma non dei parametri del modella...???
+params = vqvae_trainer.fit(x_train_scaled, epochs=30, batch_size=32)
+model_params = pd.DataFrame(params.history)
+model_params.to_csv(filename, index=False)# il file è pieno solo delle funzioni di loss ma non dei parametri del modella...???
 
 
 # load the weights in checkpoint format
@@ -298,29 +298,37 @@ while os.path.isfile(filename):
 
 
 # saves the weights of the training
-#vqvae_trainer.save_weights(checkpoint_file)
+vqvae_trainer.save_weights(checkpoint_file)
 
 
 
 
-
+# show the images and the codes for numpy dataset for 4 images
 def show_subplot(original, reconstructed):
     plt.subplot(1, 2, 1)
-    plt.imshow(original.squeeze() + 0.5)
+    plt.imshow(original)# this for tensorflow dataset the following commented for numpy
+    #plt.imshow(original.squeeze() + 0.5)
     plt.title("Original")
     plt.axis("off")
 
     plt.subplot(1, 2, 2)
-    plt.imshow(reconstructed.squeeze() + 0.5)
+    plt.imshow(reconstructed)# this for tensorflow dataset the following commented for numpy
+    #plt.imshow(reconstructed.squeeze() + 0.5)
     plt.title("Reconstructed")
     plt.axis("off")
 
     plt.show()
 
+# with tensorflow dataset
+for example in x_test_scaled.take(1):
+  test_images = example[0:4]
+
 
 trained_vqvae_model = vqvae_trainer.vqvae
+'''
 idx = np.random.choice(len(x_test_scaled), 4)
 test_images = x_test_scaled[idx]
+'''
 reconstructions_test = trained_vqvae_model.predict(test_images)
 
 for test_image, reconstructed_image in zip(test_images, reconstructions_test):
@@ -339,7 +347,8 @@ codebook_indices = codebook_indices.numpy().reshape(encoded_outputs.shape[:-1])
 
 for i in range(len(test_images)):
     plt.subplot(1, 2, 1)
-    plt.imshow(test_images[i].squeeze() + 0.5)
+    plt.imshow(test_images[i])# this for tensorflow dataset the following commented for numpy
+    #plt.imshow(test_images[i].squeeze() + 0.5)
     plt.title("Original")
     plt.axis("off")
 
@@ -348,3 +357,7 @@ for i in range(len(test_images)):
     plt.title("Code")
     plt.axis("off")
     plt.show()
+
+
+
+
