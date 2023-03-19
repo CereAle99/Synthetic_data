@@ -88,9 +88,7 @@ def resblock(x, kernelsize, filters):
 def get_encoder(latent_dim=16):
     encoder_inputs = keras.Input(shape=(160, 160, 3))
     x = layers.Conv2D(32, 3, activation="relu", strides=2, padding="same")(encoder_inputs)
-    x = resblock(x, 3, 32)
     x = layers.Conv2D(64, 3, activation="relu", strides=2, padding="same")(x)
-    x = resblock(x, 3, 64)
     x = layers.Conv2D(128, 3, activation="relu", strides=2, padding="same")(x)
     encoder_outputs = layers.Conv2D(latent_dim, 1, padding="same")(x)
     return keras.Model(encoder_inputs, encoder_outputs, name="encoder")
@@ -99,11 +97,12 @@ def get_encoder(latent_dim=16):
 def get_decoder(latent_dim=16):
     latent_inputs = keras.Input(shape=get_encoder(latent_dim).output.shape[1:])
     x = layers.Conv2DTranspose(128, 4, activation="relu", strides=2, padding="same")(latent_inputs) #dimesion of the filter 4x4 because in the decoding you jump a row each two and with 3x3 you evaluate only the zeros around your central pixel
-    x = resblock(x, 4, 128)
     x = layers.Conv2DTranspose(64, 4, activation="relu", strides=2, padding="same")(x) #dimesion of the filter
     x = resblock(x, 4, 64)
     x = resblock(x, 4, 64)
     x = layers.Conv2DTranspose(32, 4, activation="relu", strides=2, padding="same")(x)
+    x = resblock(x, 4, 32)
+    x = resblock(x, 4, 32)
     decoder_outputs = layers.Conv2DTranspose(3, 3, padding="same")(x)
     return keras.Model(latent_inputs, decoder_outputs, name="decoder")
 
