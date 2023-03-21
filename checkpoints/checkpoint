@@ -1,2 +1,2 @@
-model_checkpoint_path: "model_flowers10"
-all_model_checkpoint_paths: "model_flowers10"
+model_checkpoint_path: "model_flowers11"
+all_model_checkpoint_paths: "model_flowers11"
