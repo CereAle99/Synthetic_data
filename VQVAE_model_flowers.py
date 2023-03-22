@@ -290,7 +290,7 @@ while os.path.isfile(filename):
     i += 1
 
 # training of the neural network and then saves as a .csv file the model parameters hystory
-params = vqvae_trainer.fit(x_train_scaled, epochs=30, batch_size=32)
+params = vqvae_trainer.fit(x_train_scaled, epochs=15, batch_size=32)
 model_params = pd.DataFrame(params.history)
 model_params.to_csv(filename, index=False)# il file è pieno solo delle funzioni di loss ma non dei parametri del modella...???
 
