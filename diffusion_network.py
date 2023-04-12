@@ -10,10 +10,10 @@ from keras import layers
 # HYPERPARAMETERS
 
 # data
-dataset_name = "oxford_flowers102"
+dataset_name = "cifar10"
 dataset_repetitions = 5
 num_epochs = 1  # train for at least 50 epochs for good results
-image_size = 64
+image_size = 32
 # KID = Kernel Inception Distance, see related section
 kid_image_size = 75
 kid_diffusion_steps = 5
@@ -73,8 +73,8 @@ def prepare_dataset(split):
 
 
 # load dataset
-train_dataset = prepare_dataset("train[:80%]+validation[:80%]+test[:80%]")
-val_dataset = prepare_dataset("train[80%:]+validation[80%:]+test[80%:]")
+train_dataset = prepare_dataset("train[:80%]+test[:80%]")
+val_dataset = prepare_dataset("train[80%:]+test[80%:]")
 
 
 
