@@ -2,7 +2,8 @@ import math
 import matplotlib.pyplot as plt
 import tensorflow as tf
 import tensorflow_datasets as tfds
-
+import pathlib
+import numpy as np
 from tensorflow import keras
 from keras import layers
 
@@ -76,6 +77,69 @@ def prepare_dataset(split):
 train_dataset = prepare_dataset("train[:80%]+test[:80%]")
 val_dataset = prepare_dataset("train[80%:]+test[80%:]")
 
+
+
+
+################################################
+
+
+
+
+
+
+
+# Training Dataset
+dataset_url = "https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz"
+data_dir = tf.keras.utils.get_file(origin=dataset_url,
+                                   fname='flower_photos',
+                                   untar=True)
+data_dir = pathlib.Path(data_dir)
+
+
+batch_size = 32
+img_height = 160
+img_width = 160
+
+
+# training set
+x_train = tf.keras.utils.image_dataset_from_directory(
+  data_dir,
+  validation_split=0.2,
+  subset="training",
+  seed=123,
+  image_size=(img_height, img_width),
+  batch_size=batch_size)
+# trasformare il dataset in un array di numpy
+x_train = np.concatenate([batch for batch,_ in x_train])
+
+
+# testing set
+x_test = tf.keras.utils.image_dataset_from_directory(
+  data_dir,
+  validation_split=0.2,
+  subset="validation",
+  seed=123,
+  image_size=(img_height, img_width),
+  batch_size=batch_size)
+
+# trasformare il dataset in un array di numpy
+x_test = np.concatenate([batch for batch,_ in x_test])
+
+
+x_train_scaled = (x_train / 255.0) - 0.5
+x_test_scaled = (x_test / 255.0) - 0.5
+
+data_variance = np.var(x_train / 255.0)
+
+
+train_dataset = x_train_scaled
+val_dataset = x_test_scaled
+image_size = 160
+
+
+
+
+#################################################
 
 
 
